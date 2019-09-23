@@ -3,13 +3,14 @@ import {Dimensions, StyleSheet} from 'react-native';
 import {TabView, TabBar} from 'react-native-tab-view';
 import InterviewList from './InterviewList';
 import EventTimeline from './EventTimeline';
+import {accentColor, primaryColor} from '../helpers/Constants';
 
 const styles = StyleSheet.create({
   tabbar: {
-    backgroundColor: '#2196F3',
+    backgroundColor: primaryColor,
   },
   indicator: {
-    backgroundColor: '#536DFE',
+    backgroundColor: accentColor,
   },
 });
 

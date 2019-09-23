@@ -1,29 +1,28 @@
 import React, {useState} from 'react';
 import {StyleSheet, FlatList, View, Text, TouchableOpacity} from 'react-native';
+import {
+  blackColor,
+  whiteColor,
+  greenColor,
+  grayColor,
+  lightPrimaryColor,
+} from '../helpers/Constants';
 
 const defaultCircleSize = 16;
-const defaultCircleColor = '#007AFF';
 const defaultLineWidth = 2;
-const defaultLineColor = '#007AFF';
-const defaultTimeTextColor = 'black';
-const defaultDotColor = 'white';
-const defaultInnerCircle = 'none';
 
 export default EventTimeline = ({events}) => {
-  events = events.sort((a, b) => a.time - b.time);
-
+  const [eventData, setEventData] = useState(events.sort((a, b) => a.time - b.time));
   const [x, setX] = useState(0);
   const [width, setWidth] = useState(0);
 
   const renderItem = ({item, index}) => {
     return (
-      <View key={index}>
-        <View style={styles.rowContainer}>
-          {renderTime(item)}
-          {renderEvent(item)}
-          {renderCircle(item)}
-        </View>
-      </View>
+      <TouchableOpacity key={index} style={styles.rowContainer}>
+        {renderTime(item)}
+        {renderEvent(item)}
+        {renderCircle()}
+      </TouchableOpacity>
     );
   };
 
@@ -41,12 +40,11 @@ export default EventTimeline = ({events}) => {
   };
 
   const renderEvent = rowData => {
-    const lineWidth = rowData.lineWidth ? rowData.lineWidth : defaultLineWidth;
-    const isLast = events.slice(-1)[0] === rowData;
-    const lineColor = isLast ? 'rgba(0,0,0,0)' : rowData.lineColor;
+    const isLast = eventData.slice(-1)[0] === rowData;
+    const lineColor = isLast ? whiteColor : greenColor;
     let opStyle = {
       borderColor: lineColor,
-      borderLeftWidth: lineWidth,
+      borderLeftWidth: defaultLineWidth,
       borderRightWidth: 0,
       marginLeft: 20,
       paddingLeft: 20,
@@ -62,10 +60,8 @@ export default EventTimeline = ({events}) => {
             setWidth(width);
           }
         }}>
-        <TouchableOpacity onPress={() => null}>
-          <View style={styles.detail}>{renderDetail(rowData)}</View>
-          {renderSeparator()}
-        </TouchableOpacity>
+        <View style={styles.detail}>{renderDetail(rowData)}</View>
+        {renderSeparator()}
       </View>
     );
   };
@@ -82,24 +78,20 @@ export default EventTimeline = ({events}) => {
     return <View style={styles.container}>{title}</View>;
   };
 
-  const renderCircle = rowData => {
-    let circleSize = rowData.circleSize ? rowData.circleSize : defaultCircleSize;
-    let circleColor = rowData.circleColor ? rowData.circleColor : defaultCircleColor;
-    let lineWidth = rowData.lineWidth ? rowData.lineWidth : defaultLineWidth;
-
+  const renderCircle = () => {
     let circleStyle = {
-      width: x ? circleSize : 0,
-      height: x ? circleSize : 0,
-      borderRadius: circleSize / 2,
-      backgroundColor: circleColor,
-      left: x - circleSize / 2 + (lineWidth - 1) / 2,
+      width: x ? defaultCircleSize : 0,
+      height: x ? defaultCircleSize : 0,
+      borderRadius: defaultCircleSize / 2,
+      backgroundColor: lightPrimaryColor,
+      left: x - defaultCircleSize / 2 + (defaultLineWidth - 1) / 2,
     };
 
     let dotStyle = {
-      height: circleSize / 2,
-      width: circleSize / 2,
-      borderRadius: circleSize / 4,
-      backgroundColor: rowData.dotColor ? rowData.dotColor : defaultDotColor,
+      height: defaultCircleSize / 2,
+      width: defaultCircleSize / 2,
+      borderRadius: defaultCircleSize / 4,
+      backgroundColor: whiteColor,
     };
     let innerCircle = <View style={[styles.dot, dotStyle]} />;
 
@@ -114,23 +106,12 @@ export default EventTimeline = ({events}) => {
     <View style={styles.container}>
       <FlatList
         style={styles.listview}
-        data={events}
+        data={eventData}
         renderItem={renderItem}
-        keyExtractor={(item, index) => index + ''}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
       />
     </View>
   );
-};
-
-EventTimeline.defaultProps = {
-  circleSize: defaultCircleSize,
-  circleColor: defaultCircleColor,
-  lineWidth: defaultLineWidth,
-  lineColor: defaultLineColor,
-  innerCircle: defaultInnerCircle,
-  columnFormat: 'single-column-left',
-  separator: false,
-  showTime: true,
 };
 
 const styles = StyleSheet.create({
@@ -143,17 +124,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 30,
   },
-  sectionHeader: {
-    marginBottom: 15,
-    backgroundColor: '#007AFF',
-    height: 30,
-    justifyContent: 'center',
-  },
-  sectionHeaderText: {
-    color: '#FFF',
-    fontSize: 18,
-    alignSelf: 'center',
-  },
   rowContainer: {
     flexDirection: 'row',
     flex: 1,
@@ -164,7 +134,7 @@ const styles = StyleSheet.create({
   },
   time: {
     textAlign: 'right',
-    color: defaultTimeTextColor,
+    color: blackColor,
     overflow: 'hidden',
   },
   circle: {
@@ -180,7 +150,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: defaultDotColor,
+    backgroundColor: whiteColor,
   },
   title: {
     fontSize: 16,
@@ -197,7 +167,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    backgroundColor: '#aaa',
+    backgroundColor: grayColor,
     marginTop: 10,
     marginBottom: 10,
   },

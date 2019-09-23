@@ -7,6 +7,8 @@ import schema from './src/models/schema';
 import Participant from './src/models/Participant';
 import Interview from './src/models/Interview';
 import Event from './src/models/Event';
+import {StatusBar} from 'react-native';
+import {darkPrimaryColor} from './src/helpers/Constants';
 
 const adapter = new SQLiteAdapter({
   dbName: 'TimelineDb',
@@ -23,6 +25,7 @@ const Navigation = createNavigation();
 
 const App = () => (
   <DatabaseProvider database={database}>
+    <StatusBar backgroundColor={darkPrimaryColor} />
     <Navigation />
   </DatabaseProvider>
 );

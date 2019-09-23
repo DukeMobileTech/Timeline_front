@@ -3,6 +3,7 @@ import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import ParticipantList from '../components/ParticipantList';
 import ParticipantDetails from '../components/ParticipantDetails';
+import {whiteColor, primaryColor} from './Constants';
 
 const createNavigation = props =>
   createAppContainer(
@@ -35,9 +36,9 @@ const createNavigation = props =>
         initialRouteParams: props,
         defaultNavigationOptions: {
           headerStyle: {
-            backgroundColor: '#1976d2',
+            backgroundColor: primaryColor,
           },
-          headerTintColor: '#fff',
+          headerTintColor: whiteColor,
           headerTitleStyle: {
             fontWeight: 'bold',
           },
