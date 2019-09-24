@@ -1,9 +1,13 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Dimensions, StyleSheet} from 'react-native';
 import {TabView, TabBar} from 'react-native-tab-view';
 import InterviewList from './InterviewList';
 import EventTimeline from './EventTimeline';
 import {accentColor, primaryColor} from '../helpers/Constants';
+import {YellowBox} from 'react-native';
+
+// TODO: Remove when react-native-tab-view fixes issue
+YellowBox.ignoreWarnings(['Warning: componentWillMount is deprecated']);
 
 const styles = StyleSheet.create({
   tabbar: {
@@ -14,38 +18,42 @@ const styles = StyleSheet.create({
   },
 });
 
-class ParticipantDetails extends React.Component {
-  state = {
+const ParticipantDetails = props => {
+  const routes = [{key: 'interviews', title: 'Interviews'}, {key: 'events', title: 'Events'}];
+  const [state, setState] = useState({
     index: 0,
-    routes: [{key: 'interviews', title: 'Interviews'}, {key: 'events', title: 'Events'}],
-  };
+    routes: routes,
+  });
 
-  renderScene = ({route}) => {
+  const renderScene = ({route}) => {
     switch (route.key) {
       case 'interviews':
-        return <InterviewList interviews={this.props.interviews} />;
+        return <InterviewList interviews={props.interviews} />;
       case 'events':
-        return <EventTimeline events={this.props.events} />;
+        return <EventTimeline events={props.events} />;
       default:
         return null;
     }
   };
 
-  renderTabBar = props => (
+  const renderTabBar = props => (
     <TabBar {...props} indicatorStyle={styles.indicator} style={styles.tabbar} />
   );
 
-  render() {
-    return (
-      <TabView
-        navigationState={this.state}
-        renderScene={this.renderScene}
-        onIndexChange={index => this.setState({index})}
-        initialLayout={{width: Dimensions.get('window').width}}
-        renderTabBar={this.renderTabBar}
-      />
-    );
-  }
-}
+  return (
+    <TabView
+      navigationState={state}
+      renderScene={renderScene}
+      onIndexChange={index =>
+        setState({
+          index: index,
+          routes: routes,
+        })
+      }
+      initialLayout={{width: Dimensions.get('window').width}}
+      renderTabBar={renderTabBar}
+    />
+  );
+};
 
 export default ParticipantDetails;
