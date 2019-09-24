@@ -1,15 +1,13 @@
 import React from 'react';
 import {SafeAreaView, FlatList, Text, View, StyleSheet} from 'react-native';
+import {Separator} from '../helpers/Separator';
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: 'whitesmoke',
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
+    padding: 10,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
   },
   details: {
     flex: 1,
@@ -18,6 +16,7 @@ const styles = StyleSheet.create({
   label: {
     justifyContent: 'flex-start',
     width: '50%',
+    fontSize: 18,
   },
 });
 
@@ -58,6 +57,7 @@ const InterviewList = ({interviews}) => {
         data={interviews}
         renderItem={({item: interview}) => <Interview interview={interview} />}
         keyExtractor={interview => `${interview.id}`}
+        ItemSeparatorComponent={Separator}
       />
     </SafeAreaView>
   );

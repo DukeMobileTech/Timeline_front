@@ -1,12 +1,7 @@
 import React, {useState} from 'react';
 import {StyleSheet, FlatList, View, Text, TouchableOpacity} from 'react-native';
-import {
-  blackColor,
-  whiteColor,
-  greenColor,
-  grayColor,
-  lightPrimaryColor,
-} from '../helpers/Constants';
+import {blackColor, whiteColor, greenColor, lightPrimaryColor} from '../helpers/Constants';
+import {Separator} from '../helpers/Separator';
 
 const defaultCircleSize = 16;
 const defaultLineWidth = 2;
@@ -61,7 +56,7 @@ export default EventTimeline = ({events}) => {
           }
         }}>
         <View style={styles.detail}>{renderDetail(rowData)}</View>
-        {renderSeparator()}
+        <Separator />
       </View>
     );
   };
@@ -98,10 +93,6 @@ export default EventTimeline = ({events}) => {
     return <View style={[styles.circle, circleStyle]}>{innerCircle}</View>;
   };
 
-  const renderSeparator = () => {
-    return <View style={styles.separator} />;
-  };
-
   return (
     <View style={styles.container}>
       <FlatList
@@ -136,6 +127,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     color: blackColor,
     overflow: 'hidden',
+    fontSize: 18,
   },
   circle: {
     width: 16,
@@ -153,7 +145,7 @@ const styles = StyleSheet.create({
     backgroundColor: whiteColor,
   },
   title: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   details: {
@@ -164,11 +156,6 @@ const styles = StyleSheet.create({
   detail: {paddingTop: 10, paddingBottom: 10},
   description: {
     marginTop: 10,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: grayColor,
-    marginTop: 10,
-    marginBottom: 10,
+    fontSize: 18,
   },
 });

@@ -1,7 +1,7 @@
 import React from 'react';
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-import ParticipantList from '../components/ParticipantList';
+import Root from '../components/Root';
 import ParticipantDetails from '../components/ParticipantDetails';
 import {whiteColor, primaryColor} from './Constants';
 
@@ -11,7 +11,7 @@ const createNavigation = props =>
       {
         Root: {
           screen: ({navigation}) => {
-            return <ParticipantList navigation={navigation} />;
+            return <Root navigation={navigation} />;
           },
           navigationOptions: {
             title: 'Participants',

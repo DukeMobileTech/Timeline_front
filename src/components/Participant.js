@@ -5,27 +5,24 @@ import withObservables from '@nozbe/with-observables';
 
 const styles = StyleSheet.create({
   participant: {
-    backgroundColor: 'whitesmoke',
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
+    textAlign: 'center',
   },
-  subTitle: {
-    fontSize: 20,
-  },
-  participantDetails: {
+  details: {
     flex: 1,
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    fontSize: 20,
   },
-  participantSite: {
+  site: {
     justifyContent: 'flex-start',
-    width: '50%',
   },
-  participantType: {
-    width: '50%',
+  type: {
+    justifyContent: 'flex-end',
   },
 });
 
@@ -35,13 +32,9 @@ const Participant = ({participant, interviews, events, navigation}) => {
       style={styles.participant}
       onPress={() => navigation.navigate('Participant', {participant, interviews, events})}>
       <Text style={styles.title}>{participant.newId}</Text>
-      <View style={styles.participantDetails}>
-        <View style={styles.participantSite}>
-          <Text style={styles.subTitle}>{participant.site}</Text>
-        </View>
-        <View style={styles.participantType}>
-          <Text style={styles.subTitle}>{participant.participantType}</Text>
-        </View>
+      <View style={styles.details}>
+        <Text style={styles.site}>{participant.site}</Text>
+        <Text style={styles.type}>{participant.participantType}</Text>
       </View>
     </TouchableOpacity>
   );
