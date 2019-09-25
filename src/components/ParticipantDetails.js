@@ -7,7 +7,10 @@ import {accentColor, primaryColor} from '../helpers/Constants';
 import {YellowBox} from 'react-native';
 
 // TODO: Remove when react-native-tab-view fixes issue
-YellowBox.ignoreWarnings(['Warning: componentWillMount is deprecated']);
+YellowBox.ignoreWarnings([
+  'Warning: componentWillMount is deprecated',
+  'Warning: componentWillReceiveProps is deprecated',
+]);
 
 const styles = StyleSheet.create({
   tabbar: {
