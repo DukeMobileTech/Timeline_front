@@ -16,6 +16,8 @@ export default class Event extends Model {
 
   @date('time') time;
 
+  @field('position') position;
+
   @readonly @date('created_at') createdAt;
 
   @readonly @date('updated_at') updatedAt;

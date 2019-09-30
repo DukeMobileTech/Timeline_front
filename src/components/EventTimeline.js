@@ -4,6 +4,7 @@ import {whiteColor, greenColor, lightPrimaryColor, grayColor} from '../helpers/C
 import {Separator} from '../helpers/Separator';
 import immutableMove from '../helpers/ImmutableList';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {database} from '../../App';
 
 const defaultCircleSize = 16;
 const defaultLineWidth = 2;
@@ -28,9 +29,11 @@ export default class EventTimeline extends Component {
     this.yToIndex = this.yToIndex.bind(this);
     this.animateList = this.animateList.bind(this);
     this.reset = this.reset.bind(this);
+    this.reorder = this.reorder.bind(this);
+    this.updatePositions = this.updatePositions.bind(this);
 
     this.state = {
-      events: this.props.events.sort((a, b) => a.time - b.time),
+      events: this.props.events.sort((a, b) => a.position - b.position),
       x: 0,
       width: 0,
       dragging: false,
@@ -60,6 +63,7 @@ export default class EventTimeline extends Component {
       onPanResponderTerminationRequest: (evt, gestureState) => false,
       onPanResponderRelease: (evt, gestureState) => {
         this.reset();
+        this.updatePositions();
       },
       onPanResponderTerminate: (evt, gestureState) => {
         this.reset();
@@ -68,6 +72,27 @@ export default class EventTimeline extends Component {
         return true;
       },
     });
+  }
+
+  updatePositions() {
+    const updates = this.reorder(this.state.events);
+    database.action(async () => {
+      await database.batch(...updates);
+    });
+  }
+
+  reorder(events) {
+    const updates = [];
+    events.map((event, index) => {
+      if (event.position !== index + 1) {
+        updates.push(
+          event.prepareUpdate(evt => {
+            evt.position = index + 1;
+          })
+        );
+      }
+    });
+    return updates;
   }
 
   yToIndex(y) {

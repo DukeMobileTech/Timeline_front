@@ -33,6 +33,7 @@ const setModelAttributes = (tableName, model, record) => {
       model.title = record.title;
       model.description = record.description;
       model.time = record.time;
+      model.position = record.position;
   }
 };
 

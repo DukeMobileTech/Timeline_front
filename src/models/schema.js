@@ -39,6 +39,7 @@ export default appSchema({
         {name: 'title', type: 'string'},
         {name: 'description', type: 'string'},
         {name: 'time', type: 'number'},
+        {name: 'position', type: 'number'},
         {name: 'created_at', type: 'number'},
         {name: 'updated_at', type: 'number'},
       ],
