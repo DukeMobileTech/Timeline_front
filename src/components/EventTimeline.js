@@ -5,6 +5,7 @@ import {Separator} from '../helpers/Separator';
 import immutableMove from '../helpers/ImmutableList';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {database} from '../../App';
+import DoubleTap from '../helpers/DoubleTap';
 
 const defaultCircleSize = 16;
 const defaultLineWidth = 2;
@@ -154,11 +155,17 @@ export default class EventTimeline extends Component {
         <View {...(noPanResponder ? {} : this._panResponder.panHandlers)}>
           <MaterialIcons name="drag-handle" size={28} />
         </View>
-        <View style={styles.time}>
-          <Text>{rowData.time.toLocaleDateString()}</Text>
-        </View>
+        <DoubleTap onDoubleTap={() => this.handleDoubleTap(rowData)}>
+          <View style={styles.time}>
+            <Text>{rowData.time.toLocaleDateString()}</Text>
+          </View>
+        </DoubleTap>
       </View>
     );
+  }
+
+  handleDoubleTap(event) {
+    console.log(event.time.toLocaleDateString());
   }
 
   _renderEvent(rowData) {
