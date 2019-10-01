@@ -6,6 +6,7 @@ import immutableMove from '../helpers/ImmutableList';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {database} from '../../App';
 import DoubleTap from '../helpers/DoubleTap';
+import DatePicker from '../helpers/DatePicker';
 
 const defaultCircleSize = 16;
 const defaultLineWidth = 2;
@@ -32,6 +33,7 @@ export default class EventTimeline extends Component {
     this.reset = this.reset.bind(this);
     this.reorder = this.reorder.bind(this);
     this.updatePositions = this.updatePositions.bind(this);
+    this.setVisible = this.setVisible.bind(this);
 
     this.state = {
       events: this.props.events.sort((a, b) => a.position - b.position),
@@ -39,6 +41,8 @@ export default class EventTimeline extends Component {
       width: 0,
       dragging: false,
       draggingIndex: -1,
+      showDatePicker: false,
+      event: null,
     };
 
     this._panResponder = PanResponder.create({
@@ -165,7 +169,11 @@ export default class EventTimeline extends Component {
   }
 
   handleDoubleTap(event) {
-    console.log(event.time.toLocaleDateString());
+    this.setState({showDatePicker: true, event: event});
+  }
+
+  setVisible() {
+    this.setState({showDatePicker: !this.state.showDatePicker, event: null});
   }
 
   _renderEvent(rowData) {
@@ -239,6 +247,13 @@ export default class EventTimeline extends Component {
             }}>
             {this._renderItem({item: this.state.events[this.state.draggingIndex], index: -1}, true)}
           </Animated.View>
+        )}
+        {this.state.showDatePicker && (
+          <DatePicker
+            event={this.state.event}
+            isVisible={this.state.showDatePicker}
+            setVisible={this.setVisible}
+          />
         )}
         <FlatList
           style={styles.listview}
