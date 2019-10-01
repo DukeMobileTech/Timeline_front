@@ -1,6 +1,13 @@
 import React, {Component} from 'react';
 import {StyleSheet, FlatList, View, Text, PanResponder, Animated} from 'react-native';
-import {whiteColor, greenColor, lightPrimaryColor, grayColor} from '../helpers/Constants';
+import {
+  whiteColor,
+  greenColor,
+  lightPrimaryColor,
+  grayColor,
+  blackColor,
+  accentColor,
+} from '../helpers/Constants';
 import {Separator} from '../helpers/Separator';
 import immutableMove from '../helpers/ImmutableList';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -36,7 +43,7 @@ export default class EventTimeline extends Component {
     this.setVisible = this.setVisible.bind(this);
 
     this.state = {
-      events: this.props.events.sort((a, b) => a.position - b.position),
+      events: this.prepareEvents(this.props.events),
       x: 0,
       width: 0,
       dragging: false,
@@ -79,6 +86,27 @@ export default class EventTimeline extends Component {
     });
   }
 
+  prepareEvents(events) {
+    ordered = events.sort((a, b) => a.position - b.position);
+    if (ordered.length > 1) {
+      for (let i = 0; i < ordered.length - 1; i++) {
+        this.assignTextColor(ordered[i], ordered[i + 1]);
+      }
+      if (ordered[ordered.length - 1].time >= ordered[ordered.length - 2].time) {
+        ordered[ordered.length - 1].backgroundColor = blackColor;
+      }
+    }
+    return ordered;
+  }
+
+  assignTextColor(eventOne, eventTwo) {
+    if (eventOne.time <= eventTwo.time) {
+      eventOne.backgroundColor = blackColor;
+    } else {
+      eventOne.backgroundColor = accentColor;
+    }
+  }
+
   updatePositions() {
     const updates = this.reorder(this.state.events);
     database.action(async () => {
@@ -97,6 +125,7 @@ export default class EventTimeline extends Component {
         );
       }
     });
+    this.setState({events: this.prepareEvents(events)});
     return updates;
   }
 
@@ -161,7 +190,9 @@ export default class EventTimeline extends Component {
         </View>
         <DoubleTap onDoubleTap={() => this.handleDoubleTap(rowData)}>
           <View style={styles.time}>
-            <Text>{rowData.time.toLocaleDateString()}</Text>
+            <Text style={{color: rowData.backgroundColor}}>
+              {rowData.time.toLocaleDateString()}
+            </Text>
           </View>
         </DoubleTap>
       </View>
@@ -173,7 +204,11 @@ export default class EventTimeline extends Component {
   }
 
   setVisible() {
-    this.setState({showDatePicker: !this.state.showDatePicker, event: null});
+    this.setState({
+      showDatePicker: !this.state.showDatePicker,
+      event: null,
+      events: this.prepareEvents(this.state.events),
+    });
   }
 
   _renderEvent(rowData) {
