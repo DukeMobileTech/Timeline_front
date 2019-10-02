@@ -31,9 +31,9 @@ const ParticipantDetails = props => {
   const renderScene = ({route}) => {
     switch (route.key) {
       case 'interviews':
-        return <InterviewList interviews={props.interviews} />;
+        return <InterviewList participant={props.participant} />;
       case 'events':
-        return <EventTimeline events={props.events} />;
+        return <EventTimeline participant={props.participant} />;
       default:
         return null;
     }

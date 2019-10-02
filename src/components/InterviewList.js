@@ -1,6 +1,7 @@
 import React from 'react';
 import {SafeAreaView, FlatList, Text, View, StyleSheet} from 'react-native';
 import {Separator} from '../helpers/Separator';
+import withObservables from '@nozbe/with-observables';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -63,4 +64,7 @@ const InterviewList = ({interviews}) => {
   );
 };
 
-export default InterviewList;
+export default withObservables(['participant'], ({participant}) => ({
+  participant,
+  interviews: participant.interviews,
+}))(InterviewList);

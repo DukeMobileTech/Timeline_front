@@ -26,11 +26,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const Participant = ({participant, interviews, events, navigation}) => {
+const Participant = ({participant, navigation}) => {
   return (
     <TouchableOpacity
       style={styles.participant}
-      onPress={() => navigation.navigate('Participant', {participant, interviews, events})}>
+      onPress={() => navigation.navigate('Participant', {participant})}>
       <Text style={styles.title}>{participant.newId}</Text>
       <View style={styles.details}>
         <Text style={styles.site}>{participant.site}</Text>
@@ -50,6 +50,4 @@ Participant.propTypes = {
 
 export default withObservables(['participant'], ({participant}) => ({
   participant,
-  interviews: participant.interviews,
-  events: participant.events,
 }))(Participant);

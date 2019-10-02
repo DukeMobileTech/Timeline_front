@@ -21,8 +21,6 @@ const createNavigation = props =>
           screen: ({navigation}) => (
             <ParticipantDetails
               participant={navigation.state.params.participant}
-              interviews={navigation.state.params.interviews}
-              events={navigation.state.params.events}
               navigation={navigation}
             />
           ),

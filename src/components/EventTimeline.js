@@ -14,11 +14,14 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {database} from '../../App';
 import DoubleTap from '../helpers/DoubleTap';
 import DatePicker from '../helpers/DatePicker';
+import EventModal from '../helpers/EventModal';
+import EventAddButton from '../helpers/EventAddButton';
+import withObservables from '@nozbe/with-observables';
 
 const defaultCircleSize = 16;
 const defaultLineWidth = 2;
 
-export default class EventTimeline extends Component {
+class EventTimeline extends Component {
   point = new Animated.ValueXY();
   currentY = 0;
   scrollOffset = 0;
@@ -40,9 +43,12 @@ export default class EventTimeline extends Component {
     this.reset = this.reset.bind(this);
     this.reorder = this.reorder.bind(this);
     this.updatePositions = this.updatePositions.bind(this);
-    this.setVisible = this.setVisible.bind(this);
+    this.toggleDatePickerVisibility = this.toggleDatePickerVisibility.bind(this);
+    this.handleEventAdd = this.handleEventAdd.bind(this);
+    this.toggleModalVisibility = this.toggleModalVisibility.bind(this);
 
     this.state = {
+      participant: this.props.participant,
       events: this.prepareEvents(this.props.events),
       x: 0,
       width: 0,
@@ -50,6 +56,7 @@ export default class EventTimeline extends Component {
       draggingIndex: -1,
       showDatePicker: false,
       event: null,
+      showEventModal: false,
     };
 
     this._panResponder = PanResponder.create({
@@ -203,7 +210,7 @@ export default class EventTimeline extends Component {
     this.setState({showDatePicker: true, event: event});
   }
 
-  setVisible() {
+  toggleDatePickerVisibility() {
     this.setState({
       showDatePicker: !this.state.showDatePicker,
       event: null,
@@ -268,9 +275,22 @@ export default class EventTimeline extends Component {
     return <View style={[styles.circle, circleStyle]}>{innerCircle}</View>;
   }
 
+  handleEventAdd() {
+    this.setState({showEventModal: true, event: null});
+  }
+
+  toggleModalVisibility(newEvent) {
+    this.setState({
+      showEventModal: !this.state.showEventModal,
+      event: null,
+      events: this.prepareEvents([newEvent, ...this.state.events]),
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
+        <EventAddButton handleClick={this.handleEventAdd} />
         {this.state.dragging && (
           <Animated.View
             style={{
@@ -287,7 +307,16 @@ export default class EventTimeline extends Component {
           <DatePicker
             event={this.state.event}
             isVisible={this.state.showDatePicker}
-            setVisible={this.setVisible}
+            setVisible={this.toggleDatePickerVisibility}
+          />
+        )}
+        {this.state.showEventModal && (
+          <EventModal
+            participant={this.state.participant}
+            event={this.state.event}
+            isVisible={this.state.showEventModal}
+            setVisible={this.toggleModalVisibility}
+            eventCount={this.state.events.length}
           />
         )}
         <FlatList
@@ -314,6 +343,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginLeft: 10,
+    marginRight: 10,
   },
   listview: {
     flex: 1,
@@ -358,3 +388,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
+
+export default withObservables(['participant'], ({participant}) => ({
+  participant,
+  events: participant.events,
+}))(EventTimeline);
