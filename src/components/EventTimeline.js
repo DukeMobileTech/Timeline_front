@@ -280,10 +280,11 @@ class EventTimeline extends Component {
   }
 
   toggleModalVisibility(newEvent) {
+    const events = newEvent === null ? this.state.events : [newEvent, ...this.state.events];
     this.setState({
       showEventModal: !this.state.showEventModal,
       event: null,
-      events: this.prepareEvents([newEvent, ...this.state.events]),
+      events: this.prepareEvents(events),
     });
   }
 

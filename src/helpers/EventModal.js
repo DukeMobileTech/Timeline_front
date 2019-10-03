@@ -10,14 +10,14 @@ import {database} from '../../App';
 
 export default EventModal = ({participant, event, isVisible, setVisible, eventCount}) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [title, setTitle] = useState(event === null ? '' : event.title);
-  const [description, setDescription] = useState(event === null ? '' : event.description);
+  const [title, setTitle] = useState(event === null ? null : event.title);
+  const [description, setDescription] = useState(event === null ? null : event.description);
   const [position, setPosition] = useState(event === null ? `${eventCount}` : event.position);
-  const [time, setTime] = useState(event === null ? '' : event.time);
-  const [buttonTitle, setButtonTitle] = useState(time === '' ? 'Select Time' : time);
+  const [time, setTime] = useState(event === null ? null : event.time);
+  const [buttonTitle, setButtonTitle] = useState(time === null ? 'Select Time' : time);
 
   const handleSave = async () => {
-    if (event === null) {
+    if (event === null && title !== null && description !== null && time != null) {
       await database.action(async () => {
         const newEvent = await database.collections.get('events').create(event => {
           event.participantId = participant.remoteId;
@@ -33,7 +33,7 @@ export default EventModal = ({participant, event, isVisible, setVisible, eventCo
   };
 
   const handleCancel = () => {
-    setVisible();
+    setVisible(null);
   };
 
   const handleDatePicker = () => {
@@ -65,7 +65,7 @@ export default EventModal = ({participant, event, isVisible, setVisible, eventCo
               <EventPicker value={title} eventTypes={eventTypes} setValue={handleEventTypeChange} />
             </View>
           </View>
-          {title.length > 0 && (
+          {title !== null && (
             <View style={styles.item}>
               <Text style={styles.label}>Description</Text>
               <View style={styles.input}>
