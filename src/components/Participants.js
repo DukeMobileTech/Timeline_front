@@ -35,6 +35,7 @@ export default withDatabase(
     participants: database.collections
       .get('participants')
       .query(
+        Q.where('discarded_at', null),
         Q.or(
           Q.where('site', Q.like(`%${Q.sanitizeLikeString(search)}%`)),
           Q.where('participant_type', Q.like(`%${Q.sanitizeLikeString(search)}%`)),

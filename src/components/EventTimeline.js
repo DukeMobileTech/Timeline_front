@@ -7,6 +7,7 @@ import {
   grayColor,
   blackColor,
   accentColor,
+  redColor,
 } from '../helpers/Constants';
 import {Separator} from '../helpers/Separator';
 import immutableMove from '../helpers/ImmutableList';
@@ -17,6 +18,8 @@ import DatePicker from '../helpers/DatePicker';
 import EventModal from '../helpers/EventModal';
 import EventAddButton from '../helpers/EventAddButton';
 import withObservables from '@nozbe/with-observables';
+import {SwipeRow} from 'react-native-swipe-list-view';
+import {Button} from 'react-native-elements';
 
 const defaultCircleSize = 16;
 const defaultLineWidth = 2;
@@ -168,17 +171,75 @@ class EventTimeline extends Component {
     this.setState({dragging: false, draggingIndex: -1});
   }
 
+  handleDoubleTap(event) {
+    this.setState({showDatePicker: true, event: event});
+  }
+
+  toggleDatePickerVisibility() {
+    this.setState({
+      showDatePicker: !this.state.showDatePicker,
+      event: null,
+      events: this.prepareEvents(this.state.events),
+    });
+  }
+
+  handleEventAdd() {
+    this.setState({showEventModal: true, event: null});
+  }
+
+  toggleModalVisibility(newEvent) {
+    const events = newEvent === null ? this.state.events : [newEvent, ...this.state.events];
+    this.setState({
+      showEventModal: !this.state.showEventModal,
+      event: null,
+      events: this.prepareEvents(events),
+    });
+  }
+
+  async handleEventDelete(event) {
+    await database.action(async () => {
+      const xEvent = await database.collections.get('events').find(event.id);
+      await xEvent.update(evt => {
+        evt.discardedAt = new Date().getTime();
+      });
+      let index = this.state.events.indexOf(event);
+      this.state.events.splice(index, 1);
+      this.setState({events: [...this.state.events]});
+    });
+  }
+
   _renderItem({item, index}, noPanResponder = false) {
     return (
       <View
         onLayout={e => {
           this.rowHeight = e.nativeEvent.layout.height;
         }}
-        key={index}
-        style={styles.rowContainer}>
-        {this._renderTime(item, index, noPanResponder)}
-        {this._renderEvent(item)}
-        {this._renderCircle()}
+        key={index}>
+        <SwipeRow rightOpenValue={150} style={{flex: 1}}>
+          <View
+            style={{
+              backgroundColor: grayColor,
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingLeft: 50,
+            }}>
+            <Button
+              onPress={() => this.handleEventDelete(item)}
+              buttonStyle={{backgroundColor: redColor}}
+              icon={<MaterialIcons name="delete" size={50} color={whiteColor} />}
+            />
+          </View>
+          <View
+            style={{
+              backgroundColor: whiteColor,
+              flexDirection: 'row',
+            }}>
+            {this._renderTime(item, index, noPanResponder)}
+            {this._renderEvent(item)}
+            {this._renderCircle()}
+          </View>
+        </SwipeRow>
       </View>
     );
   }
@@ -204,18 +265,6 @@ class EventTimeline extends Component {
         </DoubleTap>
       </View>
     );
-  }
-
-  handleDoubleTap(event) {
-    this.setState({showDatePicker: true, event: event});
-  }
-
-  toggleDatePickerVisibility() {
-    this.setState({
-      showDatePicker: !this.state.showDatePicker,
-      event: null,
-      events: this.prepareEvents(this.state.events),
-    });
   }
 
   _renderEvent(rowData) {
@@ -273,19 +322,6 @@ class EventTimeline extends Component {
     };
     let innerCircle = <View style={dotStyle} />;
     return <View style={[styles.circle, circleStyle]}>{innerCircle}</View>;
-  }
-
-  handleEventAdd() {
-    this.setState({showEventModal: true, event: null});
-  }
-
-  toggleModalVisibility(newEvent) {
-    const events = newEvent === null ? this.state.events : [newEvent, ...this.state.events];
-    this.setState({
-      showEventModal: !this.state.showEventModal,
-      event: null,
-      events: this.prepareEvents(events),
-    });
   }
 
   render() {
@@ -351,11 +387,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 30,
   },
-  rowContainer: {
-    flexDirection: 'row',
-    flex: 1,
-    justifyContent: 'center',
-  },
   timeContainer: {
     width: 150,
     flexDirection: 'row',
@@ -380,7 +411,6 @@ const styles = StyleSheet.create({
   },
   details: {
     borderLeftWidth: defaultLineWidth,
-    flexDirection: 'column',
     flex: 1,
   },
   detail: {paddingTop: 10, paddingBottom: 10},

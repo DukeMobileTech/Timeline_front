@@ -12,13 +12,17 @@ export default class Participant extends Model {
 
   @field('site') site;
 
+  @date('discarded_at') discardedAt;
+
   @readonly @date('created_at') createdAt;
 
   @readonly @date('updated_at') updatedAt;
 
   @lazy interviews = this.collections
     .get('interviews')
-    .query(Q.where('participant_id', this.remoteId));
+    .query(Q.where('participant_id', this.remoteId), Q.where('discarded_at', null));
 
-  @lazy events = this.collections.get('events').query(Q.where('participant_id', this.remoteId));
+  @lazy events = this.collections
+    .get('events')
+    .query(Q.where('participant_id', this.remoteId), Q.where('discarded_at', null));
 }

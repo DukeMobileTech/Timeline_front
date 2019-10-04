@@ -20,6 +20,8 @@ export default class Interview extends Model {
 
   @field('current_residence_type') currentResidenceType;
 
+  @date('discarded_at') discardedAt;
+
   @readonly @date('created_at') createdAt;
 
   @readonly @date('updated_at') updatedAt;

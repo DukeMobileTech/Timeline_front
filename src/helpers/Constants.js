@@ -43,3 +43,4 @@ export const whiteColor = '#FFFFFF';
 export const blackColor = '#212121';
 export const greenColor = '#4CAF50';
 export const grayColor = '#9E9E9E';
+export const redColor = '#CE1620';

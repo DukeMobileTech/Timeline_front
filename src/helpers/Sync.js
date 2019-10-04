@@ -17,6 +17,7 @@ const setModelAttributes = (tableName, model, record) => {
       model.newId = record.new_id;
       model.site = record.site;
       model.participantType = record.participant_type;
+      model.discardedAt = record.discarded_at;
     case INTERVIEWS:
       model.remoteId = record.id;
       model.participantId = record.participant_id;
@@ -26,6 +27,7 @@ const setModelAttributes = (tableName, model, record) => {
       model.grade = record.grade;
       model.inSiteSince = record.in_site_since;
       model.currentResidenceType = record.current_residence_type;
+      model.discardedAt = record.discarded_at;
     case EVENTS:
       model.remoteId = record.id;
       model.interviewId = record.interview_id;
@@ -34,6 +36,7 @@ const setModelAttributes = (tableName, model, record) => {
       model.description = record.description;
       model.time = record.time;
       model.position = record.position;
+      model.discardedAt = record.discarded_at;
   }
 };
 

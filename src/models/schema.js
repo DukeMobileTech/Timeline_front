@@ -13,6 +13,7 @@ export default appSchema({
         {name: 'site', type: 'string'},
         {name: 'created_at', type: 'number'},
         {name: 'updated_at', type: 'number'},
+        {name: 'discarded_at', type: 'number', isOptional: true},
       ],
     }),
     tableSchema({
@@ -28,6 +29,7 @@ export default appSchema({
         {name: 'current_residence_type', type: 'string'},
         {name: 'created_at', type: 'number'},
         {name: 'updated_at', type: 'number'},
+        {name: 'discarded_at', type: 'number', isOptional: true},
       ],
     }),
     tableSchema({
@@ -42,6 +44,7 @@ export default appSchema({
         {name: 'position', type: 'number'},
         {name: 'created_at', type: 'number'},
         {name: 'updated_at', type: 'number'},
+        {name: 'discarded_at', type: 'number', isOptional: true},
       ],
     }),
   ],

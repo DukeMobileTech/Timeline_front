@@ -18,6 +18,8 @@ export default class Event extends Model {
 
   @field('position') position;
 
+  @date('discarded_at') discardedAt;
+
   @readonly @date('created_at') createdAt;
 
   @readonly @date('updated_at') updatedAt;
