@@ -33,7 +33,43 @@ export const traumaTypes = ['abused', 'death', 'accident'];
 export const maritalEvents = ['married', 'separated', 'divorced'];
 export const wellbeingLevels = ['good', 'fair', 'bad'];
 export const birthEvents = ['1st child', '2nd child', '3rd child', '4th child', '5th plus child'];
-
+export const eventValues = new Map([
+  ['upper', 0],
+  ['education', 1],
+  ['relationship_status', 2],
+  ['moves', 3],
+  ['abuse', 4],
+  ['mentalhealth', 5],
+  ['lower', 6],
+]);
+export const eventValuesInverse = new Map([
+  [1, 'Education'],
+  [2, 'Relationship Status'],
+  [3, 'Moves'],
+  [4, 'Abuse'],
+  [5, 'Mental Health'],
+]);
+export const eventColors = new Map([
+  [1, '#1976D2'],
+  [2, '#FFC107'],
+  [3, '#9E9E9E'],
+  [4, '#CE1620'],
+  [5, '#4CAF50'],
+]);
+export const months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 // Colors
 export const darkPrimaryColor = '#1976D2';
 export const primaryColor = '#2196F3';

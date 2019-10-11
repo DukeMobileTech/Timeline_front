@@ -39,7 +39,7 @@ export default withDatabase(
         Q.or(
           Q.where('site', Q.like(`%${Q.sanitizeLikeString(search)}%`)),
           Q.where('participant_type', Q.like(`%${Q.sanitizeLikeString(search)}%`)),
-          Q.where('new_id', Q.like(`%${Q.sanitizeLikeString(search)}%`))
+          Q.where('identifier', Q.like(`%${Q.sanitizeLikeString(search)}%`))
         )
       ),
   }))(Participants)

@@ -14,7 +14,7 @@ const setModelAttributes = (tableName, model, record) => {
   switch (tableName) {
     case PARTICIPANTS:
       model.remoteId = record.id;
-      model.newId = record.new_id;
+      model.identifier = record.identifier;
       model.site = record.site;
       model.participantType = record.participant_type;
       model.discardedAt = record.discarded_at;
@@ -34,7 +34,8 @@ const setModelAttributes = (tableName, model, record) => {
       model.participantId = record.participant_id;
       model.title = record.title;
       model.description = record.description;
-      model.time = record.time;
+      model.start = record.start;
+      model.end = record.end;
       model.position = record.position;
       model.discardedAt = record.discarded_at;
   }
@@ -66,6 +67,9 @@ const remoteSync = async () => {
   const finalParticipants = response.data.map(record =>
     makeModel(PARTICIPANTS, record, existingParticipants)
   );
+  database.action(async () => {
+    await database.batch(...finalParticipants);
+  });
 
   // Interviews
   const interviewIds = response.data.reduce((ids, participant) => {
@@ -81,6 +85,9 @@ const remoteSync = async () => {
     }, interviews);
     return interviews;
   }, []);
+  database.action(async () => {
+    await database.batch(...finalInterviews);
+  });
 
   // Events
   const eventIds = response.data.reduce((ids, participant) => {
@@ -98,7 +105,7 @@ const remoteSync = async () => {
   }, []);
 
   return database.action(async () => {
-    await database.batch(...finalParticipants, ...finalInterviews, ...finalEvents);
+    await database.batch(...finalEvents);
   });
 };
 

@@ -8,7 +8,7 @@ export default appSchema({
       name: PARTICIPANTS,
       columns: [
         {name: 'remote_id', type: 'number', isIndexed: true},
-        {name: 'new_id', type: 'number', isIndexed: true},
+        {name: 'identifier', type: 'number', isIndexed: true},
         {name: 'participant_type', type: 'string'},
         {name: 'site', type: 'string'},
         {name: 'created_at', type: 'number'},
@@ -40,7 +40,8 @@ export default appSchema({
         {name: 'participant_id', type: 'number', isIndexed: true},
         {name: 'title', type: 'string'},
         {name: 'description', type: 'string'},
-        {name: 'time', type: 'number'},
+        {name: 'start', type: 'number'},
+        {name: 'end', type: 'number'},
         {name: 'position', type: 'number'},
         {name: 'created_at', type: 'number'},
         {name: 'updated_at', type: 'number'},

@@ -14,7 +14,9 @@ export default class Event extends Model {
 
   @field('description') description;
 
-  @date('time') time;
+  @date('start') start;
+
+  @date('end') end;
 
   @field('position') position;
 

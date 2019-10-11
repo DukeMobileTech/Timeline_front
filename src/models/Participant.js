@@ -6,7 +6,7 @@ export default class Participant extends Model {
 
   @field('remote_id') remoteId;
 
-  @field('new_id') newId;
+  @field('identifier') identifier;
 
   @field('participant_type') participantType;
 

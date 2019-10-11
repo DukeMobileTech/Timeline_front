@@ -30,8 +30,8 @@ const Participant = ({participant, navigation}) => {
   return (
     <TouchableOpacity
       style={styles.participant}
-      onPress={() => navigation.navigate('Participant', {participant})}>
-      <Text style={styles.title}>{participant.newId}</Text>
+      onPress={() => navigation.navigate('Timeline', {participant})}>
+      <Text style={styles.title}>{participant.identifier}</Text>
       <View style={styles.details}>
         <Text style={styles.site}>{participant.site}</Text>
         <Text style={styles.type}>{participant.participantType}</Text>
@@ -42,7 +42,7 @@ const Participant = ({participant, navigation}) => {
 
 Participant.propTypes = {
   participant: PropTypes.shape({
-    newId: PropTypes.number.isRequired,
+    identifier: PropTypes.number.isRequired,
     site: PropTypes.string.isRequired,
     participantType: PropTypes.string.isRequired,
   }).isRequired,
