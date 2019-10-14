@@ -14,6 +14,8 @@ import {
 
 import Svg, {Path} from 'react-native-svg';
 import ToggleSwitch from 'toggle-switch-react-native';
+import EventAddButton from '../helpers/EventAddButton';
+import EventModal from '../helpers/EventModal';
 
 const allYValues = Array.from(eventValues.values());
 
@@ -63,15 +65,22 @@ const getWidth = () => {
   return Dimensions.get('window').width * 0.8;
 };
 
+const sortEvents = events => {
+  return events.sort((a, b) => a.start - b.start);
+};
+
 const Timeline = props => {
-  const oEvents = props.events.sort((a, b) => a.start - b.start);
-  const events = getEvents(oEvents);
+  const participant = props.participant;
+  const oEvents = sortEvents(props.events);
   const monthsCount = differenceInMonths(oEvents[oEvents.length - 1].end, oEvents[0].start);
   const height = Math.round(Dimensions.get('window').height * 0.55);
+  const [events, setEvents] = useState(getEvents(oEvents));
   const [width, setWidth] = useState(getWidth());
   const [expand, setExpand] = useState(false);
   const [description, setDescription] = useState('Press on an event to view');
   const [year, setYear] = useState('');
+  const [event, setEvent] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (expand) {
@@ -96,8 +105,30 @@ const Timeline = props => {
     setYear(event.time.getFullYear());
   };
 
+  const handleEventAdd = () => {
+    setEvent(null);
+    setShowModal(true);
+  };
+
+  const toggleModalVisibility = newEvent => {
+    const events = newEvent === null ? oEvents : [newEvent, ...oEvents];
+    setShowModal(!showModal);
+    setEvent(null);
+    setEvents(getEvents(sortEvents(events)));
+  };
+
   return (
     <View style={styles.container}>
+      <EventAddButton handleClick={handleEventAdd} />
+      {showModal && (
+        <EventModal
+          participant={participant}
+          event={event}
+          isVisible={showModal}
+          setVisible={toggleModalVisibility}
+          // eventCount={oEvents.length}
+        />
+      )}
       <View style={styles.graphContainer}>
         <View key={'yAxis'} height={height} style={styles.leftContainer}>
           {allYValues.map((value, index) => {

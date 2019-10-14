@@ -3,16 +3,14 @@ import RNPickerSelect from 'react-native-picker-select';
 import {
   educationLevels,
   moveTypes,
-  traumaTypes,
-  maritalEvents,
-  wellbeingLevels,
-  birthEvents,
+  abuseTypes,
+  relationshipStatus,
+  mentalHealth,
   EDUCATION,
   MOVES,
-  TRAUMA,
-  MARRIAGE,
-  WELLBEING,
-  BIRTH,
+  ABUSE,
+  RELATIONSHIP_STATUS,
+  MENTALHEALTH,
 } from './Constants';
 import PickerSelectionStyles from './PickerSelectionStyles';
 
@@ -34,13 +32,13 @@ export const EventDescription = ({value, title, setDescription}) => {
       return <EventPicker value={value} eventTypes={educationLevels} setValue={setDescription} />;
     case MOVES:
       return <EventPicker value={value} eventTypes={moveTypes} setValue={setDescription} />;
-    case TRAUMA:
-      return <EventPicker value={value} eventTypes={traumaTypes} setValue={setDescription} />;
-    case MARRIAGE:
-      return <EventPicker value={value} eventTypes={maritalEvents} setValue={setDescription} />;
-    case WELLBEING:
-      return <EventPicker value={value} eventTypes={wellbeingLevels} setValue={setDescription} />;
-    case BIRTH:
-      return <EventPicker value={value} eventTypes={birthEvents} setValue={setDescription} />;
+    case ABUSE:
+      return <EventPicker value={value} eventTypes={abuseTypes} setValue={setDescription} />;
+    case RELATIONSHIP_STATUS:
+      return (
+        <EventPicker value={value} eventTypes={relationshipStatus} setValue={setDescription} />
+      );
+    case MENTALHEALTH:
+      return <EventPicker value={value} eventTypes={mentalHealth} setValue={setDescription} />;
   }
 };

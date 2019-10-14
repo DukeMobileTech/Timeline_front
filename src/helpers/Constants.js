@@ -6,11 +6,10 @@ export const INTERVIEWS = 'interviews';
 export const EVENTS = 'events';
 export const EDUCATION = 'education';
 export const MOVES = 'moves';
-export const TRAUMA = 'trauma';
-export const MARRIAGE = 'marriage';
-export const WELLBEING = 'wellbeing';
-export const BIRTH = 'birth';
-export const eventTypes = [EDUCATION, MOVES, TRAUMA, MARRIAGE, WELLBEING, BIRTH];
+export const ABUSE = 'abuse';
+export const RELATIONSHIP_STATUS = 'relationship_status';
+export const MENTALHEALTH = 'mentalhealth';
+export const eventTypes = [EDUCATION, MOVES, ABUSE, RELATIONSHIP_STATUS, MENTALHEALTH];
 export const educationLevels = [
   'Grade 1',
   'Grade 2',
@@ -29,10 +28,9 @@ export const educationLevels = [
   'None of the above',
 ];
 export const moveTypes = ['moved to community', 'moved to institution'];
-export const traumaTypes = ['abused', 'death', 'accident'];
-export const maritalEvents = ['married', 'separated', 'divorced'];
-export const wellbeingLevels = ['good', 'fair', 'bad'];
-export const birthEvents = ['1st child', '2nd child', '3rd child', '4th child', '5th plus child'];
+export const abuseTypes = ['abused'];
+export const relationshipStatus = ['single', 'married', 'separated', 'divorced', 'widowed'];
+export const mentalHealth = ['low', 'medium', 'high'];
 export const eventValues = new Map([
   ['upper', 0],
   ['education', 1],

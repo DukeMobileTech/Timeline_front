@@ -7,24 +7,28 @@ import {Button} from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import {EventDescription, EventPicker} from './EventPicker';
 import {database} from '../../App';
+import {YellowBox} from 'react-native';
 
-export default EventModal = ({participant, event, isVisible, setVisible, eventCount}) => {
+// TODO: Remove when issue fixed
+YellowBox.ignoreWarnings(['Warning: componentWillReceiveProps is deprecated']);
+
+export default EventModal = ({participant, event, isVisible, setVisible}) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [title, setTitle] = useState(event === null ? null : event.title);
   const [description, setDescription] = useState(event === null ? null : event.description);
-  const [position, setPosition] = useState(event === null ? `${eventCount}` : event.position);
-  const [time, setTime] = useState(event === null ? null : event.time);
-  const [buttonTitle, setButtonTitle] = useState(time === null ? 'Select Time' : time);
+  const [start, setStart] = useState(event === null ? null : event.start);
+  const [end, setEnd] = useState(event === null ? null : event.end);
+  const [buttonTitle, setButtonTitle] = useState(start === null ? 'Select Time' : start);
 
   const handleSave = async () => {
-    if (event === null && title !== null && description !== null && time != null) {
+    if (event === null && title !== null && description !== null && start != null && end != null) {
       await database.action(async () => {
         const newEvent = await database.collections.get('events').create(event => {
           event.participantId = participant.remoteId;
           event.title = title;
           event.description = description;
-          event.position = position;
-          event.time = time;
+          event.start = start;
+          event.end = end;
           // TODO: Figure out interviewId
         });
         setVisible(newEvent);
@@ -45,8 +49,9 @@ export default EventModal = ({participant, event, isVisible, setVisible, eventCo
   };
 
   handleDatePicked = date => {
-    setTime(date.getTime());
+    setStart(date.getTime());
     setButtonTitle(date.toLocaleDateString());
+    setEnd(new Date(date.setMonth(date.getMonth() + 1)));
     hideDateTimePicker();
   };
 
@@ -65,6 +70,12 @@ export default EventModal = ({participant, event, isVisible, setVisible, eventCo
               <EventPicker value={title} eventTypes={eventTypes} setValue={handleEventTypeChange} />
             </View>
           </View>
+          <View style={styles.item}>
+            <Text style={styles.label}>Time</Text>
+            <View style={styles.input}>
+              <Button title={buttonTitle} onPress={handleDatePicker} />
+            </View>
+          </View>
           {title !== null && (
             <View style={styles.item}>
               <Text style={styles.label}>Description</Text>
@@ -77,21 +88,6 @@ export default EventModal = ({participant, event, isVisible, setVisible, eventCo
               </View>
             </View>
           )}
-          <View style={styles.item}>
-            <Text style={styles.label}>Time</Text>
-            <View style={styles.input}>
-              <Button title={buttonTitle} onPress={handleDatePicker} />
-            </View>
-          </View>
-          <View style={styles.item}>
-            <Text style={styles.label}>Position</Text>
-            <TextInput
-              style={styles.input}
-              keyboardType="number-pad"
-              onChangeText={text => setPosition(text)}
-              value={position}
-            />
-          </View>
           <View style={styles.item}>
             <Button title="Cancel" type="outline" onPress={handleCancel} />
             <Button title="Save" buttonStyle={{backgroundColor: greenColor}} onPress={handleSave} />
