@@ -6,7 +6,9 @@ export default class Interview extends Model {
 
   @field('remote_id') remoteId;
 
-  @field('participant_id') participantId;
+  @field('identifier') identifier;
+
+  @field('participant_identifier') participantIdentifier;
 
   @field('round') round;
 
@@ -15,10 +17,6 @@ export default class Interview extends Model {
   @field('age') age;
 
   @field('grade') grade;
-
-  @field('in_site_since') inSiteSince;
-
-  @field('current_residence_type') currentResidenceType;
 
   @date('discarded_at') discardedAt;
 

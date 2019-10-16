@@ -11,7 +11,7 @@ import {
   greenColor,
   months,
 } from '../helpers/Constants';
-
+import moment from 'moment';
 import Svg, {Path} from 'react-native-svg';
 import ToggleSwitch from 'toggle-switch-react-native';
 import EventAddButton from '../helpers/EventAddButton';
@@ -20,9 +20,15 @@ import EventModal from '../helpers/EventModal';
 const allYValues = Array.from(eventValues.values());
 
 const createScaleX = (events, width) => {
+  const start = moment(events[0].time)
+    .subtract(2, 'month')
+    .toDate();
+  const end = moment(events[events.length - 1].time)
+    .add(1, 'month')
+    .toDate();
   return scale
     .scaleTime()
-    .domain([events[0].start, events[events.length - 1].end])
+    .domain([start, end])
     .range([0, width]);
 };
 
@@ -39,16 +45,22 @@ const getEvents = events => {
     const value = eventValues.get(event.title);
     allEvents.push([
       {
-        time: event.start,
+        time: moment(event.time)
+          .subtract(2, 'month')
+          .toDate(),
         value: value,
         title: event.title,
         description: event.description,
+        interviewDate: event.time,
       },
       {
-        time: event.end,
+        time: moment(event.time)
+          .add(1, 'month')
+          .toDate(),
         value: value,
         title: event.title,
         description: event.description,
+        interviewDate: event.time,
       },
     ]);
   });
@@ -66,13 +78,13 @@ const getWidth = () => {
 };
 
 const sortEvents = events => {
-  return events.sort((a, b) => a.start - b.start);
+  return events.sort((a, b) => a.time - b.time);
 };
 
 const Timeline = props => {
   const participant = props.participant;
   const oEvents = sortEvents(props.events);
-  const monthsCount = differenceInMonths(oEvents[oEvents.length - 1].end, oEvents[0].start);
+  const monthsCount = differenceInMonths(oEvents[oEvents.length - 1].time, oEvents[0].time);
   const height = Math.round(Dimensions.get('window').height * 0.55);
   const [events, setEvents] = useState(getEvents(oEvents));
   const [width, setWidth] = useState(getWidth());
@@ -102,7 +114,7 @@ const Timeline = props => {
 
   const onPressEvent = event => {
     setDescription(event.description);
-    setYear(event.time.getFullYear());
+    setYear(moment(event.interviewDate).format('MMMM YYYY'));
   };
 
   const handleEventAdd = () => {
@@ -124,9 +136,9 @@ const Timeline = props => {
         <EventModal
           participant={participant}
           event={event}
+          interviews={props.interviews}
           isVisible={showModal}
           setVisible={toggleModalVisibility}
-          // eventCount={oEvents.length}
         />
       )}
       <View style={styles.graphContainer}>
@@ -151,7 +163,7 @@ const Timeline = props => {
                       key={index}
                       d={path}
                       stroke={color}
-                      strokeWidth={25}
+                      strokeWidth={40}
                       onPress={() => onPressEvent(group[0])}
                     />
                   );
@@ -194,6 +206,7 @@ const Timeline = props => {
 export default withObservables(['participant'], ({participant}) => ({
   participant,
   events: participant.events,
+  interviews: participant.interviews,
 }))(Timeline);
 
 const styles = StyleSheet.create({

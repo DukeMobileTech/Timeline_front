@@ -6,19 +6,17 @@ export default class Event extends Model {
 
   @field('remote_id') remoteId;
 
-  @field('interview_id') interviewId;
+  @field('uuid') uuid;
 
-  @field('participant_id') participantId;
+  @field('interview_identifier') interviewIdentifier;
+
+  @field('participant_identifier') participantIdentifier;
 
   @field('title') title;
 
   @field('description') description;
 
-  @date('start') start;
-
-  @date('end') end;
-
-  @field('position') position;
+  @date('time') time;
 
   @date('discarded_at') discardedAt;
 

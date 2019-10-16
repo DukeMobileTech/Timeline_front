@@ -3,6 +3,8 @@ import {database} from '../../App';
 import {Q} from '@nozbe/watermelondb';
 import {PARTICIPANTS, INTERVIEWS, EVENTS} from './Constants';
 
+const BATCH_SIZE = 4000;
+
 const getExistingModelsByIds = async (tableName, ids) => {
   return await database.collections
     .get(tableName)
@@ -20,23 +22,21 @@ const setModelAttributes = (tableName, model, record) => {
       model.discardedAt = record.discarded_at;
     case INTERVIEWS:
       model.remoteId = record.id;
-      model.participantId = record.participant_id;
+      model.identifier = record.identifier;
+      model.participantIdentifier = record.participant_identifier;
       model.round = record.round;
       model.interviewDate = record.interview_date;
       model.age = record.age;
       model.grade = record.grade;
-      model.inSiteSince = record.in_site_since;
-      model.currentResidenceType = record.current_residence_type;
       model.discardedAt = record.discarded_at;
     case EVENTS:
       model.remoteId = record.id;
-      model.interviewId = record.interview_id;
-      model.participantId = record.participant_id;
+      model.uuid = record.uuid;
+      model.interviewIdentifier = record.interview_identifier;
+      model.participantIdentifier = record.participant_identifier;
       model.title = record.title;
       model.description = record.description;
-      model.start = record.start;
-      model.end = record.end;
-      model.position = record.position;
+      model.time = record.time;
       model.discardedAt = record.discarded_at;
   }
 };
@@ -50,6 +50,15 @@ const makeModel = (tableName, record, existingRecords) => {
   return database.collections
     .get(tableName)
     .prepareCreate(model => setModelAttributes(tableName, model, record));
+};
+
+const chunkedRecords = records => {
+  let result = [];
+  for (let i = 0; i < records.length; i += BATCH_SIZE) {
+    let chunk = records.slice(i, i + BATCH_SIZE);
+    result.push(chunk);
+  }
+  return result;
 };
 
 const remoteSync = async () => {
@@ -67,9 +76,6 @@ const remoteSync = async () => {
   const finalParticipants = response.data.map(record =>
     makeModel(PARTICIPANTS, record, existingParticipants)
   );
-  database.action(async () => {
-    await database.batch(...finalParticipants);
-  });
 
   // Interviews
   const interviewIds = response.data.reduce((ids, participant) => {
@@ -85,9 +91,6 @@ const remoteSync = async () => {
     }, interviews);
     return interviews;
   }, []);
-  database.action(async () => {
-    await database.batch(...finalInterviews);
-  });
 
   // Events
   const eventIds = response.data.reduce((ids, participant) => {
@@ -103,9 +106,10 @@ const remoteSync = async () => {
     }, events);
     return events;
   }, []);
-
-  return database.action(async () => {
-    await database.batch(...finalEvents);
+  return chunkedRecords([...finalParticipants, ...finalInterviews, ...finalEvents]).map(records => {
+    database.action(async () => {
+      await database.batch(...records);
+    });
   });
 };
 

@@ -6,45 +6,45 @@ export const INTERVIEWS = 'interviews';
 export const EVENTS = 'events';
 export const EDUCATION = 'education';
 export const MOVES = 'moves';
-export const ABUSE = 'abuse';
-export const RELATIONSHIP_STATUS = 'relationship_status';
-export const MENTALHEALTH = 'mentalhealth';
-export const eventTypes = [EDUCATION, MOVES, ABUSE, RELATIONSHIP_STATUS, MENTALHEALTH];
+export const TRAUMA = 'trauma';
+export const RELATIONSHIPSTATUS = 'relationship status';
+export const MENTALHEALTH = 'mental health';
+export const eventTypes = [EDUCATION, MOVES, TRAUMA, RELATIONSHIPSTATUS, MENTALHEALTH];
 export const educationLevels = [
-  'Grade 1',
-  'Grade 2',
-  'Grade 3',
-  'Grade 4',
-  'Grade 5',
-  'Grade 6',
-  'Grade 7',
-  'Grade 8',
-  'Grade 9',
-  'Grade 10',
-  'Grade 11',
-  'Grade 12',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
   'College/Vocational training',
   'University or above',
-  'None of the above',
+  'Not enrolled',
 ];
 export const moveTypes = ['moved to community', 'moved to institution'];
-export const abuseTypes = ['abused'];
+export const traumaTypes = ['abused'];
 export const relationshipStatus = ['single', 'married', 'separated', 'divorced', 'widowed'];
 export const mentalHealth = ['low', 'medium', 'high'];
 export const eventValues = new Map([
   ['upper', 0],
   ['education', 1],
-  ['relationship_status', 2],
+  ['relationship status', 2],
   ['moves', 3],
-  ['abuse', 4],
-  ['mentalhealth', 5],
+  ['trauma', 4],
+  ['mental health', 5],
   ['lower', 6],
 ]);
 export const eventValuesInverse = new Map([
   [1, 'Education'],
   [2, 'Relationship Status'],
   [3, 'Moves'],
-  [4, 'Abuse'],
+  [4, 'Trauma'],
   [5, 'Mental Health'],
 ]);
 export const eventColors = new Map([

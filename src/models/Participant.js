@@ -20,9 +20,9 @@ export default class Participant extends Model {
 
   @lazy interviews = this.collections
     .get('interviews')
-    .query(Q.where('participant_id', this.remoteId), Q.where('discarded_at', null));
+    .query(Q.where('participant_identifier', this.identifier), Q.where('discarded_at', null));
 
   @lazy events = this.collections
     .get('events')
-    .query(Q.where('participant_id', this.remoteId), Q.where('discarded_at', null));
+    .query(Q.where('participant_identifier', this.identifier), Q.where('discarded_at', null));
 }

@@ -8,28 +8,33 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import {EventDescription, EventPicker} from './EventPicker';
 import {database} from '../../App';
 import {YellowBox} from 'react-native';
+import uuid from 'react-native-uuid';
 
 // TODO: Remove when issue fixed
 YellowBox.ignoreWarnings(['Warning: componentWillReceiveProps is deprecated']);
 
-export default EventModal = ({participant, event, isVisible, setVisible}) => {
+export default EventModal = ({participant, event, interviews, isVisible, setVisible}) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [title, setTitle] = useState(event === null ? null : event.title);
   const [description, setDescription] = useState(event === null ? null : event.description);
-  const [start, setStart] = useState(event === null ? null : event.start);
-  const [end, setEnd] = useState(event === null ? null : event.end);
-  const [buttonTitle, setButtonTitle] = useState(start === null ? 'Select Time' : start);
+  const [time, setTime] = useState(event === null ? null : event.time);
+  const [buttonTitle, setButtonTitle] = useState(time === null ? 'Select Time' : time);
 
   const handleSave = async () => {
-    if (event === null && title !== null && description !== null && start != null && end != null) {
+    interviews = interviews.sort((a, b) => a.interviewDate - b.interviewDate);
+    let interview = interviews[interviews.length - 1];
+    const insterviewsAfter = interviews.filter(inter => inter.interviewDate >= time);
+    if (insterviewsAfter.length > 0) interview = insterviewsAfter[0];
+
+    if (event === null && title !== null && description !== null && time != null) {
       await database.action(async () => {
         const newEvent = await database.collections.get('events').create(event => {
           event.participantId = participant.remoteId;
+          event.interviewIdentifier = interview.identifier;
           event.title = title;
           event.description = description;
-          event.start = start;
-          event.end = end;
-          // TODO: Figure out interviewId
+          event.time = time;
+          event.uuid = uuid.v4();
         });
         setVisible(newEvent);
       });
@@ -49,9 +54,8 @@ export default EventModal = ({participant, event, isVisible, setVisible}) => {
   };
 
   handleDatePicked = date => {
-    setStart(date.getTime());
+    setTime(date.getTime());
     setButtonTitle(date.toLocaleDateString());
-    setEnd(new Date(date.setMonth(date.getMonth() + 1)));
     hideDateTimePicker();
   };
 

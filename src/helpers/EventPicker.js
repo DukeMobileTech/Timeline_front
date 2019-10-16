@@ -3,13 +3,13 @@ import RNPickerSelect from 'react-native-picker-select';
 import {
   educationLevels,
   moveTypes,
-  abuseTypes,
+  traumaTypes,
   relationshipStatus,
   mentalHealth,
   EDUCATION,
   MOVES,
-  ABUSE,
-  RELATIONSHIP_STATUS,
+  TRAUMA,
+  RELATIONSHIPSTATUS,
   MENTALHEALTH,
 } from './Constants';
 import PickerSelectionStyles from './PickerSelectionStyles';
@@ -32,9 +32,9 @@ export const EventDescription = ({value, title, setDescription}) => {
       return <EventPicker value={value} eventTypes={educationLevels} setValue={setDescription} />;
     case MOVES:
       return <EventPicker value={value} eventTypes={moveTypes} setValue={setDescription} />;
-    case ABUSE:
-      return <EventPicker value={value} eventTypes={abuseTypes} setValue={setDescription} />;
-    case RELATIONSHIP_STATUS:
+    case TRAUMA:
+      return <EventPicker value={value} eventTypes={traumaTypes} setValue={setDescription} />;
+    case RELATIONSHIPSTATUS:
       return (
         <EventPicker value={value} eventTypes={relationshipStatus} setValue={setDescription} />
       );
