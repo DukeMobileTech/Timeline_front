@@ -9,6 +9,8 @@ import Interview from './src/models/Interview';
 import Event from './src/models/Event';
 import {StatusBar} from 'react-native';
 import {darkPrimaryColor} from './src/helpers/Constants';
+import {RefreshProvider} from './src/context/RefreshContext';
+import {AccessTokenProvider} from './src/context/AccessTokenContext';
 
 const adapter = new SQLiteAdapter({
   dbName: 'TimelineDb',
@@ -23,11 +25,17 @@ export const database = new Database({
 
 const Navigation = createNavigation();
 
-const App = () => (
-  <DatabaseProvider database={database}>
-    <StatusBar backgroundColor={darkPrimaryColor} />
-    <Navigation />
-  </DatabaseProvider>
-);
+const App = () => {
+  return (
+    <DatabaseProvider database={database}>
+      <RefreshProvider>
+        <AccessTokenProvider>
+          <StatusBar backgroundColor={darkPrimaryColor} />
+          <Navigation />
+        </AccessTokenProvider>
+      </RefreshProvider>
+    </DatabaseProvider>
+  );
+};
 
 export default App;

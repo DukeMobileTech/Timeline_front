@@ -1,32 +1,51 @@
-import React, {useState} from 'react';
-import {FlatList} from 'react-native';
+import React, {useEffect, useContext} from 'react';
+import {FlatList, View} from 'react-native';
 import {withDatabase} from '@nozbe/watermelondb/DatabaseProvider';
 import withObservables from '@nozbe/with-observables';
 import Participant from './Participant';
 import remoteSync from '../helpers/Sync';
 import {Separator} from '../helpers/Separator';
 import {Q} from '@nozbe/watermelondb';
+import {RefreshContext} from '../context/RefreshContext';
+import {AccessTokenContext} from '../context/AccessTokenContext';
 
 const Participants = ({participants, navigation}) => {
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [token, setToken] = useContext(AccessTokenContext);
+  console.log('token:', token);
+  const [refreshing, setRefreshing] = useContext(RefreshContext);
+  if (navigation.getParam('refresh')) {
+    setRefreshing(true);
+  }
 
-  const remoteRefresh = async () => {
-    setIsRefreshing(true);
-    await remoteSync();
-    setIsRefreshing(false);
-  };
+  useEffect(() => {
+    const remoteRefresh = async () => {
+      console.log('remote refresh');
+      if (refreshing) {
+        console.log('refresh using: ', token);
+        if (token === null) {
+          navigation.navigate('Login', {navigation});
+        } else {
+          await remoteSync(navigation, token, setToken);
+          setRefreshing(false);
+        }
+      }
+    };
+    remoteRefresh();
+  }, [refreshing]);
 
   return (
-    <FlatList
-      data={participants}
-      renderItem={({item: participant}) => (
-        <Participant participant={participant} navigation={navigation} />
-      )}
-      keyExtractor={participant => `${participant.id}`}
-      onRefresh={() => remoteRefresh()}
-      refreshing={isRefreshing}
-      ItemSeparatorComponent={Separator}
-    />
+    <View style={{flex: 1}}>
+      <FlatList
+        data={participants}
+        renderItem={({item: participant}) => (
+          <Participant participant={participant} navigation={navigation} />
+        )}
+        keyExtractor={participant => `${participant.id}`}
+        onRefresh={() => null}
+        refreshing={refreshing}
+        ItemSeparatorComponent={Separator}
+      />
+    </View>
   );
 };
 

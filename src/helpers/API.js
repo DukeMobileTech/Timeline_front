@@ -1,27 +1,30 @@
 import axios from 'axios';
 import {Platform} from 'react-native';
 
-let instance;
-if (Platform.OS === 'ios') {
-  instance = axios.create({
-    baseURL: 'http://localhost:3000/',
-    responseType: 'json',
-  });
-} else {
-  instance = axios.create({
-    baseURL: 'http://10.0.2.2:3000/',
-    responseType: 'json',
-  });
-}
+const baseURL = Platform.OS === 'ios' ? 'http://localhost:3000/' : 'http://10.0.2.2:3000/';
 
-export const getParticipants = () => {
-  return instance.get('/participants');
+const getHeaders = async accessToken => {
+  return {
+    headers: {
+      Accept: 'application/json',
+      client: accessToken.client,
+      uid: accessToken.uid,
+      'Content-Type': 'application/json',
+      'access-token': accessToken['access-token'],
+    },
+  };
 };
 
-export const getInterviews = () => {
-  return instance.get('/interviews');
+export const getParticipants = async accessToken => {
+  const headers = await getHeaders(accessToken);
+  return await axios.get(`${baseURL}participants`, headers);
 };
 
-export const getEvents = () => {
-  return instance.get('/events');
+export const authURL = {
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
+  login: `${baseURL}auth/sign_in`,
+  validate_token: `${baseURL}auth/validate_token`,
 };

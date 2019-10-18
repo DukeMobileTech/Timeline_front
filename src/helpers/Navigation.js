@@ -4,16 +4,28 @@ import {createStackNavigator} from 'react-navigation-stack';
 import Root from '../components/Root';
 import {whiteColor, primaryColor} from './Constants';
 import Timeline from '../components/Timeline';
+import {Button} from 'react-native-elements';
+import Login from './Login';
 
-const createNavigation = props =>
+const createNavigation = () =>
   createAppContainer(
     createStackNavigator(
       {
         Root: {
           screen: ({navigation}) => <Root navigation={navigation} />,
-          navigationOptions: {
+          navigationOptions: ({navigation}) => ({
             title: 'Participants',
-          },
+            headerRight: (
+              <Button
+                icon={{
+                  name: 'refresh',
+                  size: 30,
+                  color: 'white',
+                }}
+                onPress={() => navigation.navigate('Root', {navigation, refresh: true})}
+              />
+            ),
+          }),
         },
         Timeline: {
           screen: ({navigation}) => (
@@ -23,10 +35,15 @@ const createNavigation = props =>
             title: `${navigation.state.params.participant.identifier}`,
           }),
         },
+        Login: {
+          screen: ({navigation}) => <Login navigation={navigation} />,
+          navigationOptions: {
+            title: 'Login',
+          },
+        },
       },
       {
         initialRouteName: 'Root',
-        initialRouteParams: props,
         defaultNavigationOptions: {
           headerStyle: {
             backgroundColor: primaryColor,
