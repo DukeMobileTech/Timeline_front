@@ -1,8 +1,9 @@
 import {Model} from '@nozbe/watermelondb';
 import {field, date, readonly} from '@nozbe/watermelondb/decorators';
+import {INTERVIEWS} from '../helpers/Constants';
 
 export default class Interview extends Model {
-  static table = 'interviews';
+  static table = INTERVIEWS;
 
   @field('remote_id') remoteId;
 

@@ -15,9 +15,9 @@ const getHeaders = async accessToken => {
   };
 };
 
-export const getParticipants = async accessToken => {
+export const getParticipants = async (accessToken, page) => {
   const headers = await getHeaders(accessToken);
-  return await axios.get(`${baseURL}participants`, headers);
+  return await axios.get(`${baseURL}participants?page=${page}`, headers);
 };
 
 export const authURL = {

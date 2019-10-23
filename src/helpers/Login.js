@@ -3,19 +3,20 @@ import {StyleSheet, KeyboardAvoidingView, TextInput, View, Dimensions} from 'rea
 import {grayColor} from './Constants';
 import {Button} from 'react-native-elements';
 import axios from 'axios';
-import {RefreshContext} from '../context/RefreshContext';
 import {storeToken} from './Keychain';
 import {authURL} from './API';
 import {AccessTokenContext} from '../context/AccessTokenContext';
+import {RefreshContext} from '../context/RefreshContext';
 
 const deviceWidth = Dimensions.get('window').width;
 
 export default Login = ({navigation}) => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
-  const [refreshing, setRefreshing] = useContext(RefreshContext);
   const [token, setToken] = useContext(AccessTokenContext);
+  const [refreshing, setRefreshing, shouldRefresh, setShouldRefresh] = useContext(RefreshContext);
   setRefreshing(false);
+  setShouldRefresh(false);
 
   const login = () => {
     axios
@@ -37,8 +38,8 @@ export default Login = ({navigation}) => {
               const success = storeToken(email, accessToken);
               if (success) {
                 setToken(accessToken);
-                setRefreshing(true);
-                navigation.navigate('Root', {navigation, refresh: true});
+                setShouldRefresh(true);
+                navigation.goBack();
               }
             }
           })

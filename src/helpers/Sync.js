@@ -2,9 +2,7 @@ import {getParticipants} from './API';
 import {database} from '../../App';
 import {Q} from '@nozbe/watermelondb';
 import {PARTICIPANTS, INTERVIEWS, EVENTS} from './Constants';
-import {storeToken, deleteToken} from './Keychain';
-
-const batchSize = 5000;
+import {deleteToken, storeToken} from './Keychain';
 
 const getExistingModelsByIds = async (tableName, ids) => {
   return await database.collections
@@ -43,7 +41,7 @@ const setModelAttributes = (tableName, model, record) => {
 };
 
 const makeModel = (tableName, record, existingRecords) => {
-  const recordToUpdate = existingRecords.find(exRecord => exRecord.remoteId == record.id);
+  const recordToUpdate = existingRecords.find(exRecord => exRecord.remoteId === record.id);
   if (recordToUpdate) {
     return recordToUpdate.prepareUpdate(model => setModelAttributes(tableName, model, record));
   }
@@ -53,25 +51,24 @@ const makeModel = (tableName, record, existingRecords) => {
     .prepareCreate(model => setModelAttributes(tableName, model, record));
 };
 
-const chunkedRecords = records => {
-  let result = [];
-  for (let i = 0; i < records.length; i += batchSize) {
-    let chunk = records.slice(i, i + batchSize);
-    result.push(chunk);
-  }
-  return result;
-};
-
-const remoteSync = async (navigation, token, setToken) => {
+const remoteSync = async (navigation, setToken, token, page) => {
   try {
-    const response = await getParticipants(token);
+    const response = await getParticipants(token, page);
     let accessToken = {
-      'access-token': response.headers['access-token'],
+      'access-token':
+        response.headers['access-token'] === ''
+          ? response.config.headers['access-token']
+          : response.headers['access-token'],
       client: response.headers.client,
       uid: response.headers.uid,
     };
-    await storeToken(accessToken.uid, accessToken);
+    storeToken(accessToken.uid, accessToken);
     setToken(accessToken);
+    const links = response.headers.link.split(',');
+    const totalLink = links.filter(link => link.split('>; ')[1] === 'rel="last"');
+    const total = Number(totalLink[0].split('page=')[1].split('>;')[0]);
+    const nextLink = links.filter(link => link.split('>; ')[1] === 'rel="next"');
+    const next = Number(nextLink[0].split('page=')[1].split('>;')[0]);
 
     // Participants
     const participantIds = response.data.reduce((ids, participant) => {
@@ -91,12 +88,15 @@ const remoteSync = async (navigation, token, setToken) => {
       return ids;
     }, []);
     const existingInterviews = await getExistingModelsByIds(INTERVIEWS, interviewIds);
-    const finalInterviews = response.data.reduce((interviews, participant) => {
+    const interviewRecords = response.data.reduce((interviews, participant) => {
       participant.interviews.map(record => {
-        interviews.push(makeModel(INTERVIEWS, record, existingInterviews));
+        interviews.push(record);
       }, interviews);
       return interviews;
     }, []);
+    const finalInterviews = interviewRecords.map(record =>
+      makeModel(INTERVIEWS, record, existingInterviews)
+    );
 
     // Events
     const eventIds = response.data.reduce((ids, participant) => {
@@ -106,21 +106,28 @@ const remoteSync = async (navigation, token, setToken) => {
       return ids;
     }, []);
     const existingEvents = await getExistingModelsByIds(EVENTS, eventIds);
-    const finalEvents = response.data.reduce((events, participant) => {
+    const eventRecords = response.data.reduce((events, participant) => {
       participant.events.map(record => {
-        events.push(makeModel(EVENTS, record, existingEvents));
+        events.push(record);
       }, events);
       return events;
     }, []);
-    return chunkedRecords([...finalParticipants, ...finalInterviews, ...finalEvents]).map(
-      records => {
-        database.action(async () => {
-          await database.batch(...records);
-        });
+    const finalEvents = eventRecords.map(record => makeModel(EVENTS, record, existingEvents));
+
+    database.action(async () => {
+      try {
+        await database.batch(...finalParticipants, ...finalInterviews, ...finalEvents);
+      } catch (error) {
+        console.log('!!error!!', error);
       }
-    );
+    });
+
+    if (next <= total) {
+      await remoteSync(navigation, setToken, accessToken, next);
+    } else {
+      return;
+    }
   } catch (error) {
-    console.log(error);
     if (error.response.status === 401) {
       await deleteToken();
       navigation.navigate('Login', {navigation});

@@ -20,12 +20,20 @@ import EventModal from '../helpers/EventModal';
 const allYValues = Array.from(eventValues.values());
 
 const createScaleX = (events, width) => {
-  const start = moment(events[0].time)
-    .subtract(2, 'month')
-    .toDate();
-  const end = moment(events[events.length - 1].time)
-    .add(1, 'month')
-    .toDate();
+  const start =
+    events.length > 0
+      ? moment(events[0].time)
+          .subtract(2, 'month')
+          .toDate()
+      : moment(Date.now())
+          .subtract(5, 'years')
+          .toDate();
+  const end =
+    events.length > 0
+      ? moment(events[events.length - 1].time)
+          .add(1, 'month')
+          .toDate()
+      : Date.now();
   return scale
     .scaleTime()
     .domain([start, end])
@@ -84,7 +92,8 @@ const sortEvents = events => {
 const Timeline = props => {
   const participant = props.participant;
   const oEvents = sortEvents(props.events);
-  const monthsCount = differenceInMonths(oEvents[oEvents.length - 1].time, oEvents[0].time);
+  const monthsCount =
+    oEvents.length > 0 ? differenceInMonths(oEvents[oEvents.length - 1].time, oEvents[0].time) : 60;
   const height = Math.round(Dimensions.get('window').height * 0.55);
   const [events, setEvents] = useState(getEvents(oEvents));
   const [width, setWidth] = useState(getWidth());

@@ -11,27 +11,34 @@ import {AccessTokenContext} from '../context/AccessTokenContext';
 
 const Participants = ({participants, navigation}) => {
   const [token, setToken] = useContext(AccessTokenContext);
-  console.log('token:', token);
-  const [refreshing, setRefreshing] = useContext(RefreshContext);
+  const [refreshing, setRefreshing, shouldRefresh, setShouldRefresh] = useContext(RefreshContext);
   if (navigation.getParam('refresh')) {
-    setRefreshing(true);
+    setShouldRefresh(true);
+  } else {
+    setShouldRefresh(false);
+    setRefreshing(false);
   }
 
   useEffect(() => {
     const remoteRefresh = async () => {
-      console.log('remote refresh');
-      if (refreshing) {
-        console.log('refresh using: ', token);
+      if (shouldRefresh) {
         if (token === null) {
           navigation.navigate('Login', {navigation});
         } else {
-          await remoteSync(navigation, token, setToken);
-          setRefreshing(false);
+          if (!refreshing) {
+            setRefreshing(true);
+            try {
+              await remoteSync(navigation, setToken, token, 1);
+            } catch (error) {
+              console.log('refresh error:', error);
+              navigation.setParams({refresh: false});
+            }
+          }
         }
       }
     };
     remoteRefresh();
-  }, [refreshing]);
+  }, [shouldRefresh]);
 
   return (
     <View style={{flex: 1}}>

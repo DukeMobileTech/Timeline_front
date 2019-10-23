@@ -1,8 +1,9 @@
 import {Model, Q} from '@nozbe/watermelondb';
 import {field, date, readonly, lazy} from '@nozbe/watermelondb/decorators';
+import {PARTICIPANTS} from '../helpers/Constants';
 
 export default class Participant extends Model {
-  static table = 'participants';
+  static table = PARTICIPANTS;
 
   @field('remote_id') remoteId;
 
